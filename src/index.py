@@ -58,7 +58,7 @@ def play_audio(signal, samples_per_s):
     stream.close()
     p.terminate()
 
-# === Play both filtered versions ===
+# Play both filtered versions
 print("Playing LOW-pass filtered...")
 play_audio(low_passed, samples_per_s)
 
