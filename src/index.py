@@ -59,6 +59,9 @@ def play_audio(signal, samples_per_s):
     p.terminate()
 
 # Play both filtered versions
+print("Playing original audio...")
+play_audio(data, samples_per_s)
+
 print("Playing LOW-pass filtered...")
 play_audio(low_passed, samples_per_s)
 
