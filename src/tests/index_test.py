@@ -22,3 +22,8 @@ class Test_Low_pass_filter(unittest.TestCase):
         result = low_pass_filter(self.fft_data, self.frequencies, cutoff_freq)
         # Check that the filter actually changes the data (they should NOT be equal)
         self.assertFalse(np.array_equal(result, self.fft_data), "Low-pass filter should change the data")
+
+    def test_high_pass(self):
+        result = high_pass_filter(self.fft_data, low_pass_filter(self.fft_data, self.frequencies, cutoff_freq))
+        # Check that the filter actually changes the data (they should NOT be equal)
+        self.assertFalse(np.array_equal(result, self.fft_data), "High-pass filter should change the data")
