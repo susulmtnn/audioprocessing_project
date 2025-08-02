@@ -22,20 +22,6 @@ if len(data.shape) > 1:
 # Convert from time domain to frequency domain with FFT
 # TODO: Rewrite with own FFT
 
-def bit_reverse(x):
-    n = len(x)
-    # Calculate the number of bits needed to represent n
-    num_bits = int(np.log2(n))
-    # Create a dictionary for the bit-reversed indices
-    dict_indices = {}
-    for i in range(n):
-        # Convert i to binary, reverse it,convert back to decimal and store in dictionary
-        #first, we convert i to binary with leading zeros and then reverse the string
-        binary_reversed = format(i, f'0{num_bits}b')[::-1]
-        # Convert the reversed binary string back to an integer
-        reversed_index = int(binary_reversed, 2)
-        dict_indices[i] = reversed_index
-    return dict_indices
 
 def cooley_tukey(x):
     # result = np.fft.fft(x)
