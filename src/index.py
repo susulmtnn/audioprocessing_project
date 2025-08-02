@@ -21,9 +21,16 @@ if len(data.shape) > 1:
 
 # Convert from time domain to frequency domain with FFT
 # TODO: Rewrite with own FFT
+
+def cooley_tukey(x):
+    result = np.fft.fft(x)
+    return result
+
 fft_data = np.fft.fft(data)
+cooley_tukey_data = cooley_tukey(data)
 # Get the frequencies corresponding to the FFT bins
 frequencies = np.fft.fftfreq(len(data), 1 / samples_per_s)
+
 
 def low_pass_filter(fft_data, freqs, cutoff_freq):
     # We keep the frequencies below the cutoff frequency
@@ -40,8 +47,10 @@ def high_pass_filter(original_fft, low_pass_fft):
 
 # Perform analysis during server startup
 def perform_analysis():
-    global low_passed, high_passed  # Make filtered signals accessible globally
+    global low_passed, high_passed, cooley_tukey_time_domain  # Make filtered signals accessible globally
     low_passed_fft = low_pass_filter(fft_data, frequencies, cutoff_freq)
+    low_passed_cooley_tukey = low_pass_filter(cooley_tukey_data, frequencies, cutoff_freq)
+    cooley_tukey_time_domain = np.fft.ifft(low_passed_cooley_tukey).real  # Convert back to time domain
     low_passed = np.fft.ifft(low_passed_fft).real
     high_passed_fft = high_pass_filter(fft_data, low_passed_fft)
     high_passed = np.fft.ifft(high_passed_fft).real
@@ -73,6 +82,8 @@ def play():
         play_audio(data, samples_per_s)
     elif signal_type == 'low_pass':
         play_audio(low_passed, samples_per_s)
+    elif signal_type == 'cooley_tukey':
+        play_audio(cooley_tukey_time_domain, samples_per_s)
     elif signal_type == 'high_pass':
         play_audio(high_passed, samples_per_s)
     return jsonify({'status': 'playing', 'type': signal_type})
