@@ -22,12 +22,50 @@ if len(data.shape) > 1:
 # Convert from time domain to frequency domain with FFT
 # TODO: Rewrite with own FFT
 
+def bit_reverse(x):
+    n = len(x)
+    # Calculate the number of bits needed to represent n
+    num_bits = int(np.log2(n))
+    # Create a dictionary for the bit-reversed indices
+    dict_indices = {}
+    for i in range(n):
+        # Convert i to binary, reverse it,convert back to decimal and store in dictionary
+        #first, we convert i to binary with leading zeros and then reverse the string
+        binary_reversed = format(i, f'0{num_bits}b')[::-1]
+        # Convert the reversed binary string back to an integer
+        reversed_index = int(binary_reversed, 2)
+        dict_indices[i] = reversed_index
+    return dict_indices
+
 def cooley_tukey(x):
-    result = np.fft.fft(x)
-    return result
+    # result = np.fft.fft(x)
+    # return result
+    n = len(x)
+    #first we check if the recursion is already done and we have only one sample. 
+    #if yes, we can return it
+    if n <= 1:
+        return x
+    if n % 2 ==0:
+        # #if the number of samples is even, we split the samples into two parts
+        even = cooley_tukey(x[0::2])
+        odd = cooley_tukey(x[1::2])
+        # Conquer step: combine the even and odd parts
+        # We use the twiddle factor to combine the even and odd parts
+        result = np.zeros(n, dtype=complex)
+        for i in range(n // 2):
+            w = np.exp(-2j * np.pi * i / n)
+            result[i] = even[i] + w * odd[i]
+            result[i + n // 2] = even[i] - w * odd[i]
+        return result
+    else:
+        #if the number of samples is odd we add a zero to the end of the samples
+        x = np.append(x, 0)
+        return cooley_tukey(x)
 
 fft_data = np.fft.fft(data)
 cooley_tukey_data = cooley_tukey(data)
+#own frequency domain conversion for cooley-tukey
+frequencies_cooley_tukey = np.fft.fftfreq(len(cooley_tukey_data), 1 / samples_per_s)
 # Get the frequencies corresponding to the FFT bins
 frequencies = np.fft.fftfreq(len(data), 1 / samples_per_s)
 
@@ -49,7 +87,7 @@ def high_pass_filter(original_fft, low_pass_fft):
 def perform_analysis():
     global low_passed, high_passed, cooley_tukey_time_domain  # Make filtered signals accessible globally
     low_passed_fft = low_pass_filter(fft_data, frequencies, cutoff_freq)
-    low_passed_cooley_tukey = low_pass_filter(cooley_tukey_data, frequencies, cutoff_freq)
+    low_passed_cooley_tukey = low_pass_filter(cooley_tukey_data, frequencies_cooley_tukey, cutoff_freq)
     cooley_tukey_time_domain = np.fft.ifft(low_passed_cooley_tukey).real  # Convert back to time domain
     low_passed = np.fft.ifft(low_passed_fft).real
     high_passed_fft = high_pass_filter(fft_data, low_passed_fft)
@@ -77,6 +115,10 @@ def serve_html():
 
 @app.route('/play', methods=['POST'])
 def play():
+    print(f"Original data length: {len(data)}")
+    print(f"NumPy FFT length: {len(fft_data)}")
+    print(f"Cooley-Tukey length: {len(cooley_tukey_data)}")
+    print(f"Frequencies length: {len(frequencies)}")
     signal_type = request.json.get('type')
     if signal_type == 'original':
         play_audio(data, samples_per_s)
@@ -87,6 +129,8 @@ def play():
     elif signal_type == 'high_pass':
         play_audio(high_passed, samples_per_s)
     return jsonify({'status': 'playing', 'type': signal_type})
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
