@@ -3,6 +3,7 @@ import soundfile as sf
 import pyaudio
 from flask import Flask, jsonify, request, send_from_directory
 import threading
+import math
 
 app = Flask(__name__)
 
@@ -24,36 +25,40 @@ if len(data.shape) > 1:
 
 
 def cooley_tukey(x):
-    # result = np.fft.fft(x)
-    # return result
     n = len(x)
     #first we check if the recursion is already done and we have only one sample. 
     #if yes, we can return it
     if n <= 1:
         return x
-    if n % 2 ==0:
+    #pad to next power of 2 if necessary
+    if n & (n - 1) != 0:  # Check if n is not a power of 2
+        #get next power of 2
+        next_power_of_2 = math.ceil(math.log(n, 2))
+        # pad x with zeros to the next power of 2
+        next_power_of_2 = 2 ** next_power_of_2
+        x = np.pad(x, (0, next_power_of_2 - n))
+        n = next_power_of_2
+
         # #if the number of samples is even, we split the samples into two parts
-        even = cooley_tukey(x[0::2])
-        odd = cooley_tukey(x[1::2])
+    even = cooley_tukey(x[0::2])
+    odd = cooley_tukey(x[1::2])
         # Conquer step: combine the even and odd parts
         # We use the twiddle factor to combine the even and odd parts
-        result = np.zeros(n, dtype=complex)
-        for i in range(n // 2):
-            w = np.exp(-2j * np.pi * i / n)
-            result[i] = even[i] + w * odd[i]
-            result[i + n // 2] = even[i] - w * odd[i]
-        return result
-    else:
-        #if the number of samples is odd we add a zero to the end of the samples
-        x = np.append(x, 0)
-        return cooley_tukey(x)
+    result = np.zeros(n, dtype=complex)
+    for i in range(n // 2):
+        w = np.exp(-2j * np.pi * i / n)
+        result[i] = even[i] + w * odd[i]
+        result[i + n // 2] = even[i] - w * odd[i]
+    return result
 
 fft_data = np.fft.fft(data)
 cooley_tukey_data = cooley_tukey(data)
+length_of_cooley_tukey_data = len(cooley_tukey_data)
 #own frequency domain conversion for cooley-tukey
-frequencies_cooley_tukey = np.fft.fftfreq(len(cooley_tukey_data), 1 / samples_per_s)
+frequencies_cooley_tukey = np.fft.fftfreq(length_of_cooley_tukey_data, 1 / samples_per_s)
 # Get the frequencies corresponding to the FFT bins
 frequencies = np.fft.fftfreq(len(data), 1 / samples_per_s)
+
 
 
 def low_pass_filter(fft_data, freqs, cutoff_freq):
@@ -104,7 +109,9 @@ def play():
     print(f"Original data length: {len(data)}")
     print(f"NumPy FFT length: {len(fft_data)}")
     print(f"Cooley-Tukey length: {len(cooley_tukey_data)}")
+    print(f"Cooley-Tukey frequencies length: {len(frequencies_cooley_tukey)}")
     print(f"Frequencies length: {len(frequencies)}")
+    print(f"number of samples per second: {samples_per_s}")
     signal_type = request.json.get('type')
     if signal_type == 'original':
         play_audio(data, samples_per_s)
