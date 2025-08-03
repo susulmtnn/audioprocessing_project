@@ -10,8 +10,10 @@
     <h1>Audio Processing</h1>
     <button id="play-original">Play Original</button>
     <button id="play-low-pass">Play Low-Pass Filtered</button>
+     <button id="play-high-pass">Play High-Pass Filtered</button>
     <button id="play-cooley-tukey">Play Low-Pass Filetered by custom Cooley-Tukey FFT</button>
-    <button id="play-high-pass">Play High-Pass Filtered</button>
+    <button id="play-cooley-tukey-high-pass">Play High-Pass Filtered by custom Cooley-Tukey FFT</button>
+    
 
     <script>
         const playAudio = (type) => {
@@ -26,6 +28,7 @@
         document.getElementById('play-low-pass').addEventListener('click', () => playAudio('low_pass'));
         document.getElementById('play-high-pass').addEventListener('click', () => playAudio('high_pass'));
         document.getElementById('play-cooley-tukey').addEventListener('click', () => playAudio('cooley_tukey'));
-          </script>
+        document.getElementById('play-cooley-tukey-high-pass').addEventListener('click', () => playAudio('cooley_tukey_high_pass'));
+         </script>
 </body>
 </html>
