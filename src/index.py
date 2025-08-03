@@ -23,6 +23,33 @@ if len(data.shape) > 1:
 # Convert from time domain to frequency domain with FFT
 # TODO: Rewrite with own FFT
 
+def inverse_cooley_tukey(x):
+    n = len(x)
+    # first we check if the recursion is already done and we have only one sample.
+    # if yes, we can return it
+    if n <= 1:
+        return x
+    # pad to next power of 2 if necessary
+    if n & (n - 1) != 0:  # Check if n is not a power of 2
+        # get next power of 2
+        next_power_of_2 = math.ceil(math.log(n, 2))
+        # pad x with zeros to the next power of 2
+        next_power_of_2 = 2 ** next_power_of_2
+        x = np.pad(x, (0, next_power_of_2 - n))
+        n = next_power_of_2
+    # if the number of samples is even, we split the samples into two parts
+    even = inverse_cooley_tukey(x[0::2])
+    odd = inverse_cooley_tukey(x[1::2])
+    # Conquer step: combine the even and odd parts
+    # We use the twiddle factor to combine the even and odd parts
+    result = np.zeros(n, dtype=complex)
+    for i in range(n // 2):
+        # we have to change the sign of the exponent for inverse FFT
+        w = np.exp(2j * np.pi * i / n)
+        result[i] = even[i] + w * odd[i]
+        result[i + n // 2] = even[i] - w * odd[i]
+    return result / 2  # we get the result by dividing by 2 for inverse FFT
+
 
 def cooley_tukey(x):
     n = len(x)
@@ -79,7 +106,7 @@ def perform_analysis():
     global low_passed, high_passed, cooley_tukey_time_domain  # Make filtered signals accessible globally
     low_passed_fft = low_pass_filter(fft_data, frequencies, cutoff_freq)
     low_passed_cooley_tukey = low_pass_filter(cooley_tukey_data, frequencies_cooley_tukey, cutoff_freq)
-    cooley_tukey_time_domain = np.fft.ifft(low_passed_cooley_tukey).real  # Convert back to time domain
+    cooley_tukey_time_domain = inverse_cooley_tukey(low_passed_cooley_tukey).real  # Convert back to time domain
     low_passed = np.fft.ifft(low_passed_fft).real
     high_passed_fft = high_pass_filter(fft_data, low_passed_fft)
     high_passed = np.fft.ifft(high_passed_fft).real
