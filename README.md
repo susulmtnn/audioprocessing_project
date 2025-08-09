@@ -6,3 +6,5 @@ This is a link to my work diary:
 - [Week 2] (https://github.com/susulmtnn/audioprocessing_project/blob/main/docs/viikkop%C3%A4iv%C3%A4kirja/Viikko%202.pdf)
 - [Week 3] (https://github.com/susulmtnn/audioprocessing_project/blob/main/docs/viikkop%C3%A4iv%C3%A4kirja/Viikko%203.pdf)
 - [Week 4] (https://github.com/susulmtnn/audioprocessing_project/blob/main/docs/viikkop%C3%A4iv%C3%A4kirja/Viikko%204.pdf)
+- [Week 5] (https://github.com/susulmtnn/audioprocessing_project/blob/main/docs/viikkop%C3%A4iv%C3%A4kirja/Viikko%205.pdf)
+  
