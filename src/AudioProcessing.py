@@ -15,6 +15,7 @@ class AudioProcessing:
     
         self.data, self.samples_per_s = sf.read(filename)
 
+        
         # If the audio file has multiple channels, convert it to mono. This program can only handle mono.
         if len(self.data.shape) > 1:
             self.data = self.data.mean(axis=1)
