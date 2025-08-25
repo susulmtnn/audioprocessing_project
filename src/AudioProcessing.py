@@ -5,7 +5,7 @@ from functions.low_pass_filter import low_pass_filter
 from functions.high_pass_filter import high_pass_filter
 
 class AudioProcessing:
-    # Load the audio file
+# Load the audio file
 # Ensure you have a WAV file named 'testsong.wav' in the same directory
 # To run program, use command poetry run src/index.py
     def __init__(self, filename, cutoff_freq=2000):
@@ -34,12 +34,12 @@ class AudioProcessing:
     def perform_analysis(self):
         #global low_passed, high_passed, cooley_tukey_time_domain, high_passed_cooley_tukey_time_domain  # Make filtered signals accessible globally
         low_passed_fft = low_pass_filter(self.fft_data, self.frequencies, self.cutoff_freq)
-        low_passed_cooley_tukey = low_pass_filter(self.cooley_tukey_data, self.frequencies_cooley_tukey, self.cutoff_freq)
+        self.low_passed_cooley_tukey = low_pass_filter(self.cooley_tukey_data, self.frequencies_cooley_tukey, self.cutoff_freq)
         # Convert back to time domain using inverse Cooley-Tukey FFT
-        self.cooley_tukey_time_domain = cooley_tukey(low_passed_cooley_tukey, inverse=True).real  # Convert back to time domain
+        self.cooley_tukey_time_domain = cooley_tukey(self.low_passed_cooley_tukey, inverse=True).real  # Convert back to time domain
         self.low_passed = np.fft.ifft(low_passed_fft).real
         high_passed_fft = high_pass_filter(self.fft_data, low_passed_fft)
         self.high_passed = np.fft.ifft(high_passed_fft).real
-        high_passed_cooley_tukey = high_pass_filter(self.cooley_tukey_data, low_passed_cooley_tukey)
+        high_passed_cooley_tukey = high_pass_filter(self.cooley_tukey_data, self.low_passed_cooley_tukey)
         # Convert back to time domain using inverse Cooley-Tukey FFT
         self.high_passed_cooley_tukey_time_domain = cooley_tukey(high_passed_cooley_tukey, inverse=True).real

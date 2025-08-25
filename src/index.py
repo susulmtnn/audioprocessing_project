@@ -15,6 +15,8 @@ from functions.play_signal import play_signal
 
 app = Flask(__name__)
 
+audio_processor = AudioProcessing('testsong.wav', cutoff_freq=2000)
+
 @app.route('/')
 def serve_html():
     return send_from_directory('.', 'index.html')
@@ -28,5 +30,4 @@ def play():
 
 if __name__ == '__main__':
     # Initialize the audio processor when script is run directly
-    audio_processor = AudioProcessing('testsong.wav', cutoff_freq=2000)
     app.run(debug=True)
