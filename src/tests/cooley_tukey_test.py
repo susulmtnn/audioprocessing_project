@@ -1,4 +1,3 @@
-
 import unittest
 from unittest import result
 import numpy as np
@@ -60,7 +59,7 @@ class TestCooleyTukey(unittest.TestCase):
         freq1 = 2500  # Frequency of the first sine wave
         freq2 = 500   # Frequency of the second sine wave
         duration = 1.0  # Duration in seconds
-        sample_rate = 8192
+        sample_rate = 65536 #Sample rate chosen to be power of 2 to avoid leakage and it has to be at least twice the highest frequency (Nyquist theorem)
 
         t = np.linspace(0, duration, int(sample_rate * duration), endpoint=False)
         sine_wave1 = np.sin(2 * np.pi * freq1 * t)
@@ -83,24 +82,20 @@ class TestCooleyTukey(unittest.TestCase):
         result = result / np.max(np.abs(result)) * np.max(np.abs(sine_wave2))
 
         
-        fig, axs = plt.subplots(5, 1, figsize=(12, 8))
+        fig, axs = plt.subplots(4, 1, figsize=(12, 8))
         axs[0].set_title("Sine Wave 1 (2500 Hz)")
         axs[0].plot(t, sine_wave1)
         axs[1].set_title("Sine Wave 2 (500 Hz)")
         axs[1].plot(t, sine_wave2)
         axs[2].set_title("Combined Signal")
         axs[2].plot(t, combined_signal)
-        axs[4].set_title("Filtered Result (Cooley-Tukey, Low-pass < 1000 Hz)")
-        axs[4].plot(t, result)
+        axs[3].set_title("Filtered Result (Cooley-Tukey, Low-pass < 1000 Hz)")
+        axs[3].plot(t, result1)
 
         for ax in axs:
             ax.set_xlim(0, 0.01)  # Set your desired x-axis range
 
 
-        axs[3].plot(t, audio_processor.low_passed_cooley_tukey[:len(sine_wave2)])
-        axs[3].set_title("Frequency domain (Cooley-Tukey, Low-pass < 1000 Hz)")
-        axs[3].set_xlim(-1, 100)  # Set your desired x-axis range
-        axs[3].set_ylim(-0.1, 1)
         plt.tight_layout()
         plt.show()
 
