@@ -21,6 +21,7 @@
         <button type="submit">Upload WAV File</button>
         <button type="button" id="load-default">Load Default File</button>
     </form>
+    <div id="loading-message" style="display:none;">Uploading and processing file...</div>
     <p>
         If you so wish, you can upload your own WAV file to be processed. The file should be in WAV format.
     </p>
@@ -38,8 +39,10 @@
             });
         };
         const form = document.getElementById('upload-form');
+        const loadingMessage = document.getElementById('loading-message');
         form.addEventListener('submit', (e) => {
             e.preventDefault();
+            loadingMessage.style.display = 'block';
             const fileInput = document.getElementById('wav-file');
             const data = new FormData();
             data.append('wav-file', fileInput.files[0]);
@@ -49,7 +52,7 @@
             })
             .then(response => response.json())
             .then(data => {
-                alert(data.status);
+                loadingMessage.style.display = 'none';
             })
             .catch(error => { console.error('Upload failed', error)
             })});
