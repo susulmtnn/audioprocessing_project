@@ -7,13 +7,26 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <div class="container">
     <h1>Audio Processing</h1>
+    <div class="button-container" style="margin-bottom: 20px;">
     <button id="play-original">Play Original</button>
     <button id="play-low-pass">Play Low-Pass Filtered</button>
      <button id="play-high-pass">Play High-Pass Filtered</button>
     <button id="play-cooley-tukey">Play Low-Pass Filetered by custom Cooley-Tukey FFT</button>
     <button id="play-cooley-tukey-high-pass">Play High-Pass Filtered by custom Cooley-Tukey FFT</button>
-    
+    </div>
+    <form id="upload-form" enctype="multipart/form-data">
+        <input type="file" id="wav-file" name="wav-file" accept=".wav" required>
+        <button type="submit">Upload WAV File</button>
+    </form>
+    <p>
+        If you so wish, you can upload your own WAV file to be processed. The file should be in WAV format.
+    </p>
+    <p>
+        Please note that the processing might take a few seconds depending on the file size.
+    </p>
+    </div>
 
     <script>
         const playAudio = (type) => {
@@ -23,7 +36,22 @@
                 body: JSON.stringify({ type })
             });
         };
-
+        const form = document.getElementById('upload-form');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            const fileInput = document.getElementById('wav-file');
+            const data = new FormData();
+            data.append('wav-file', fileInput.files[0]);
+            fetch('/upload', {
+                method: 'POST',
+                body: data
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.status);
+            })
+            .catch(error => { console.error('Upload failed', error)
+            })});
         document.getElementById('play-original').addEventListener('click', () => playAudio('original'));
         document.getElementById('play-low-pass').addEventListener('click', () => playAudio('low_pass'));
         document.getElementById('play-high-pass').addEventListener('click', () => playAudio('high_pass'));

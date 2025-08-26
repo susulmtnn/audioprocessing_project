@@ -55,7 +55,7 @@ class TestCooleyTukey(unittest.TestCase):
             )
 
     def test_by_removing_one_sine_wave(self):
-        # Create two sine waves. One with 2500 hz and another with 500 hz
+        # two sine waves. One with 2500 hz and another with 500 hz
         freq1 = 2500  # Frequency of the first sine wave
         freq2 = 500   # Frequency of the second sine wave
         duration = 1.0  # Duration in seconds
@@ -67,41 +67,37 @@ class TestCooleyTukey(unittest.TestCase):
 
         # Combine the two sine waves
         combined_signal = sine_wave1 + sine_wave2
-
-        #normalize to prevent clipping
-        combined_signal = combined_signal / np.max(np.abs(combined_signal))
+        #scale
+        scale= 1.0 / np.max(np.abs(combined_signal))
+        combined_signal = combined_signal * scale
 
         sf.write("testsong_combined_sine_wave.wav", combined_signal, sample_rate)
 
         # Create an audio processing object with the combined signal
         audio_processor = AudioProcessing("testsong_combined_sine_wave.wav", cutoff_freq=1000)
-        result1 = audio_processor.cooley_tukey_time_domain[:len(sine_wave2)]
-        result = audio_processor.low_passed_cooley_tukey[:len(sine_wave2)]
-
-        #normalize result to match amplitude of sine_wave2
-        result = result / np.max(np.abs(result)) * np.max(np.abs(sine_wave2))
+        result = audio_processor.cooley_tukey_time_domain[:len(sine_wave2)]
 
         
-        fig, axs = plt.subplots(4, 1, figsize=(12, 8))
-        axs[0].set_title("Sine Wave 1 (2500 Hz)")
-        axs[0].plot(t, sine_wave1)
-        axs[1].set_title("Sine Wave 2 (500 Hz)")
-        axs[1].plot(t, sine_wave2)
-        axs[2].set_title("Combined Signal")
-        axs[2].plot(t, combined_signal)
-        axs[3].set_title("Filtered Result (Cooley-Tukey, Low-pass < 1000 Hz)")
-        axs[3].plot(t, result1)
+        # fig, axs = plt.subplots(4, 1, figsize=(12, 8))
+        # axs[0].set_title("Sine Wave 1 (2500 Hz)")
+        # axs[0].plot(t, sine_wave1)
+        # axs[1].set_title("Sine Wave 2 (500 Hz)")
+        # axs[1].plot(t, sine_wave2)
+        # axs[2].set_title("Combined Signal")
+        # axs[2].plot(t, combined_signal)
+        # axs[3].set_title("Filtered Result (Cooley-Tukey, Low-pass < 1000 Hz)")
+        # axs[3].plot(t, result1)
 
-        for ax in axs:
-            ax.set_xlim(0, 0.01)  # Set your desired x-axis range
+        # for ax in axs:
+        #     ax.set_xlim(0, 0.01)  # Set your desired x-axis range
 
 
-        plt.tight_layout()
-        plt.show()
+        # plt.tight_layout()
+        # plt.show()
 
         for i in range(len(sine_wave2)):
             self.assertAlmostEqual(
-            result[i], sine_wave2[i], places=1,
+            result[i], sine_wave2[i]* scale, places=1,
             msg=f"Low-pass filtered Cooley-Tukey result at index {i} should match sine_wave2"
     )
         

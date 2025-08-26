@@ -15,7 +15,8 @@ from functions.play_signal import play_signal
 
 app = Flask(__name__)
 
-audio_processor = AudioProcessing('testsong.wav', cutoff_freq=2000)
+
+audio_processor =  AudioProcessing('testsong.wav', cutoff_freq=2000)
 
 @app.route('/')
 def serve_html():
@@ -26,6 +27,17 @@ def play():
     signal_type = request.json.get('type')
     play_signal(signal_type, audio_processor)
     return jsonify({'status': 'playing', 'type': signal_type})
+
+@app.route('/upload', methods=['POST'])
+def upload():
+    file = request.files['wav-file']
+    uploaded_file = 'uploaded.wav'
+    file.save(uploaded_file)
+    print('File upload started:', uploaded_file)
+    global audio_processor
+    audio_processor = AudioProcessing(uploaded_file, cutoff_freq=2000)
+    print('File processing completed:', uploaded_file)
+    return jsonify({'status': 'File uploaded and processed'})
 
 
 if __name__ == '__main__':

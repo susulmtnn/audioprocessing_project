@@ -32,7 +32,7 @@ class AudioProcessing:
 
 # Perform analysis during server startup
     def perform_analysis(self):
-        #global low_passed, high_passed, cooley_tukey_time_domain, high_passed_cooley_tukey_time_domain  # Make filtered signals accessible globally
+        #global low_passed, high_passed, cooley_tukey_time_domain, high_passed_cooley_tukey_time_domain 
         low_passed_fft = low_pass_filter(self.fft_data, self.frequencies, self.cutoff_freq)
         self.low_passed_cooley_tukey = low_pass_filter(self.cooley_tukey_data, self.frequencies_cooley_tukey, self.cutoff_freq)
         # Convert back to time domain using inverse Cooley-Tukey FFT
