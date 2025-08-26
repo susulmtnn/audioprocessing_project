@@ -39,6 +39,14 @@ def upload():
     print('File processing completed:', uploaded_file)
     return jsonify({'status': 'File uploaded and processed'})
 
+@app.route('/default_file', methods=['POST'])
+def default_file():
+    global audio_processor
+    print('Loading default file: testsong.wav')
+    audio_processor = AudioProcessing('testsong.wav', cutoff_freq=2000)
+    print('Default file processing completed: testsong.wav')
+    return jsonify({'status': 'Default file loaded and processed'})
+
 
 if __name__ == '__main__':
     # Initialize the audio processor when script is run directly

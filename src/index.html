@@ -19,6 +19,7 @@
     <form id="upload-form" enctype="multipart/form-data">
         <input type="file" id="wav-file" name="wav-file" accept=".wav" required>
         <button type="submit">Upload WAV File</button>
+        <button type="button" id="load-default">Load Default File</button>
     </form>
     <p>
         If you so wish, you can upload your own WAV file to be processed. The file should be in WAV format.
@@ -52,6 +53,9 @@
             })
             .catch(error => { console.error('Upload failed', error)
             })});
+        document.getElementById('load-default').addEventListener('click', () => {
+        fetch('/default_file', { method: 'POST' });
+        });
         document.getElementById('play-original').addEventListener('click', () => playAudio('original'));
         document.getElementById('play-low-pass').addEventListener('click', () => playAudio('low_pass'));
         document.getElementById('play-high-pass').addEventListener('click', () => playAudio('high_pass'));
