@@ -86,7 +86,7 @@ class TestCooleyTukey(unittest.TestCase):
         # axs[2].set_title("Combined Signal")
         # axs[2].plot(t, combined_signal)
         # axs[3].set_title("Filtered Result (Cooley-Tukey, Low-pass < 1000 Hz)")
-        # axs[3].plot(t, result1)
+        # axs[3].plot(t, result)
 
         # for ax in axs:
         #     ax.set_xlim(0, 0.01)  # Set your desired x-axis range
