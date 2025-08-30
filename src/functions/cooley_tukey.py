@@ -1,13 +1,14 @@
 import math
 import numpy as np
 
-# Convert from time domain to frequency domain with FFT. 
-# And from frequency domain back to time domain with inverse FFT.
 
 def cooley_tukey(x, inverse=False):
     n = len(x)
-    #first we check if the recursion is already done and we have only one sample. 
-    #if yes, we can return it
+    '''
+    Convert from time domain to frequency domain with FFT. 
+    And from frequency domain back to time domain with inverse FFT.
+    first we check if the recursion is already done and we have only one sample. 
+    if yes, we can return it'''
     if n <= 1:
         return x
     #pad to next power of 2 if necessary

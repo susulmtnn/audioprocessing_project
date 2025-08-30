@@ -55,7 +55,7 @@ class TestCooleyTukey(unittest.TestCase):
             )
 
     def test_by_removing_one_sine_wave(self):
-        # two sine waves. One with 2500 hz and another with 500 hz
+        ''' two sine waves. One with 2500 hz and another with 500 hz'''
         freq1 = 2500  # Frequency of the first sine wave
         freq2 = 500   # Frequency of the second sine wave
         duration = 1.0  # Duration in seconds
@@ -77,7 +77,7 @@ class TestCooleyTukey(unittest.TestCase):
         audio_processor = AudioProcessing("testsong_combined_sine_wave.wav", cutoff_freq=1000)
         result = audio_processor.cooley_tukey_time_domain[:len(sine_wave2)]
 
-        
+        #This can be used to generate a graph for testing
         # fig, axs = plt.subplots(4, 1, figsize=(12, 8))
         # axs[0].set_title("Sine Wave 1 (2500 Hz)")
         # axs[0].plot(t, sine_wave1)

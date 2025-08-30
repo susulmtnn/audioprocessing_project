@@ -8,8 +8,8 @@ import soundfile as sf
 
 class TestPlaySignal(unittest.TestCase):
     def setUp(self):
-          # Create a short test audio file (first 0.5 seconds only)
-        # Read just a small portion for faster testing
+        '''Create a short test audio file (first 0.5 seconds only)
+         Read just a small portion for faster testing'''
         data, sample_rate = sf.read('testsong.wav', frames=int(0.5 * 44100))  # 0.1 seconds
         sf.write('test_short.wav', data, sample_rate)
         self.audio_processed = AudioProcessing('test_short.wav', cutoff_freq=2000)
@@ -22,7 +22,7 @@ class TestPlaySignal(unittest.TestCase):
     # patch play_audio to avoid actual audio playback during tests
     @patch('functions.play_signal.play_audio')
     def test_play_signal_outputs(self, mock_play_audio):
-        #The test checks that play_audio is called with different signals for each type
+        '''The test checks that play_audio is called with different signals for each type'''
         signals = []
         missed_types = []
         for item in self.types:
@@ -50,10 +50,10 @@ class TestPlaySignal(unittest.TestCase):
     #patch prevents actual audio playback during tests
     @patch('functions.play_signal.play_audio')
     def test_play_signal_response(self, mock_play_audio):
-        #separate test to check that play_signal returns correct response
-         #for each type without focusing on the actual audio data played
-         #during the test
-         #this should check lines 21-23, but i dont know why it doesnt show up in coverage
+        '''Separate test to check that play_signal returns correct response
+         for each type without focusing on the actual audio data played
+         during the test
+         this should check lines 21-23, but I don't know why it doesn't show up in coverage'''
         for item in self.types:
             with self.app.test_request_context(json={'type': item}):
                 response_from_api = play_signal(item, self.audio_processed)
