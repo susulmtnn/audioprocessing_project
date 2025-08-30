@@ -8,7 +8,7 @@ class AudioProcessing:
 # Load the audio file
 # Ensure you have a WAV file named 'testsong.wav' in the same directory
 # To run program, use command poetry run src/index.py
-    def __init__(self, filename, cutoff_freq=2000):
+    def __init__(self, filename, cutoff_freq=1000):
         self.filename = filename
         # Define the cutoff frequency for low-pass filter in Hz
         self.cutoff_freq = cutoff_freq

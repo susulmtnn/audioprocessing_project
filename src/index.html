@@ -57,7 +57,12 @@
             .catch(error => { console.error('Upload failed', error)
             })});
         document.getElementById('load-default').addEventListener('click', () => {
-        fetch('/default_file', { method: 'POST' });
+        loadingMessage.style.display = 'block';
+        fetch('/default_file', { method: 'POST' })
+        .then(response => response.json())
+        .then(data => {
+            loadingMessage.style.display = 'none';
+        })
         });
         document.getElementById('play-original').addEventListener('click', () => playAudio('original'));
         document.getElementById('play-low-pass').addEventListener('click', () => playAudio('low_pass'));
